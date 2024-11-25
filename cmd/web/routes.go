@@ -32,5 +32,7 @@ func (app *application) routes() http.Handler {
 	router.Post("/person/add", app.personAddPost)
 	router.Get("/person/search", app.personSearch)
 
+	router.Get("/character/search", app.characterSearch)
+
 	return router
 }

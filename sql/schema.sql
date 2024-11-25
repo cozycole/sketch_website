@@ -7,14 +7,17 @@ CREATE TABLE IF NOT EXISTS person (
     last VARCHAR NOT NULL,
     description VARCHAR,
     birthdate DATE, 
-    profile_img VARCHAR NOT NULL
+    profile_img VARCHAR NOT NULL,
+    insert_timestamp timestamp DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS character (
     id SERIAL PRIMARY KEY, 
+    slug VARCHAR NOT NULL,
     name VARCHAR NOT NULL, 
     description VARCHAR, 
     img_name VARCHAR,
+    insert_timestamp timestamp DEFAULT now(),
     person_id INT REFERENCES person(id)
 );
 
@@ -25,7 +28,8 @@ CREATE TABLE IF NOT EXISTS creator (
     page_url VARCHAR NOT NULL,
     description VARCHAR,
     profile_img VARCHAR, 
-    date_established DATE
+    date_established DATE,
+    insert_timestamp timestamp DEFAULT now()
 );
 
 --CREATE TABLE IF NOT EXISTS tag (
@@ -53,6 +57,7 @@ CREATE TABLE IF NOT EXISTS video_person_rel (
     character_id INT references character(id),
     position INT,
     img VARCHAR,
+    insert_timestamp timestamp DEFAULT now(),
     CONSTRAINT unique_video_person_character UNIQUE(video_id, person_id, character_id)
 );
 
@@ -60,6 +65,7 @@ CREATE TABLE IF NOT EXISTS video_creator_rel (
     creator_id int references creator(id),
     video_id int references video(id),
     position int,
+    insert_timestamp timestamp DEFAULT now(),
     PRIMARY KEY (creator_id, video_id)
 );
 

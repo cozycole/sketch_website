@@ -6,29 +6,31 @@
     <h1 class="text-2xl font-bold my-3">{{.Title}}</h1>
     <div class="flex my-3">
         <a href="/view/creator/{{.Creator.Slug}}">
-            <img src="/static/img/creator/{{.Creator.ProfileImage}}" class="rounded-full inline-block w-8"
+            <img src="/static/img/creator/{{.Creator.ProfileImage}}" class="rounded-full inline-block w-9"
                 alt="profile-img">
         </a>
-        <a class="ml-2" href="/view/creator/{{.Creator.Slug}}">{{.Creator.Name}}</a>
+        <div>
+            <a class="ml-2" href="/view/creator/{{.Creator.Slug}}">{{.Creator.Name}}</a>
+            <time class="block ml-2">{{humanDate .UploadDate}}</time>
+        </div>
     </div>
     <a class="my-3" href="{{.URL}}" target="_blank">
         <img class="rounded-md inline-block" src="/static/img/video/{{.Thumbnail}}" alt="thumbnail">
     </a>
-    <div class="metadata rounded-md bg-slate-300">
-        <time>Created: {{humanDate .UploadDate}}</time>
-    </div>
-    <div>
-        Cast
-        <div class="flex flex-wrap justify-start">
+    <div class="my-3 bg-gray-300">
+        <h2 class="mx-3">Cast</h2>
+        <div class="flex flex-wrap justify-start p-2">
             {{range .Cast}}
-            {{if .Actor.ID}}
-            <div class="w-[calc(25%-8px)] mx-1">
-                <a href="/person/{{.Actor.Slug}}">
-                    <img class="rounded-md" src="/static/img/person/{{.Actor.ProfileImg}}">
-                </a>
-                <h3>{{.Actor.First}} {{.Actor.Last}}</h3>
-            </div>
-            {{end}}
+                {{if .Actor.ID}}
+                <div class="relative w-[calc(25%-8px)] rounded-md mx-1 bg-pink-50">
+                    <a href="/person/{{.Actor.Slug}}">
+                        <img class="rounded-md w-full" src="/static/img/person/{{.Actor.ProfileImg}}">
+                    </a>
+                    <h3 class="absolute bottom-0 left-0 right-0 h-1/5 bg-black bg-opacity-50 text-white">
+                        <a href="/person/{{.Actor.Slug}}" class="hover:underline">{{.Actor.First}} {{.Actor.Last}}</a>
+                    </h3>
+                </div>
+                {{end}}
             {{end}}
         </div>
     </div>

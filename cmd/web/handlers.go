@@ -305,21 +305,39 @@ func (app *application) videoAddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dupeSet := make(map[int]struct{})
-	for i, id := range form.PersonIDs {
+	// dupeSet := make(map[int]struct{})
+	minLength := min(len(form.PersonIDs), len(form.CharacterIDs), len(form.CharacterThumbnails))
+	for i := 0; i < minLength; i++ {
 		// prevent adding duplicates from same form
-		if _, ok := dupeSet[id]; ok {
-			continue
+		// which would cause a database error on unique
+		// if _, ok := dupeSet[id]; ok {
+		// 	continue
+		// }
+		var cid *int
+		if form.CharacterIDs[i] != 0 {
+			cid = &form.CharacterIDs[i]
 		}
+		file, err := form.CharacterThumbnails[i].Open()
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		mimeType, err := utils.GetMultipartFileMime(file)
 
-		if id != 0 {
-			err = app.videos.InsertVideoPersonRelation(vidID, id, i)
+		pid := form.PersonIDs[i]
+		if pid != 0 {
+			// character thumbnail named bad
+
+			err = app.videos.InsertVideoPersonRelation(vidID, pid, i, cid, "")
 			if err != nil {
 				app.serverError(w, err)
 				return
 			}
-			dupeSet[id] = struct{}{}
+
+			// dupeSet[id] = struct{}{}
 		}
+
+		file.Close()
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/video/%s", slug), http.StatusSeeOther)
@@ -327,8 +345,8 @@ func (app *application) videoAddPost(w http.ResponseWriter, r *http.Request) {
 
 type searchResults struct {
 	Results      []result
-	Redirect     string // e.g. Add person result -> /person/add
-	RedirectText string
+	Redirect     string // e.g. /person/add
+	RedirectText string // e.g. "Add Person +"
 }
 
 type result struct {
@@ -376,6 +394,44 @@ func (app *application) personSearch(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "dropdown.tmpl.html", "", data)
 }
 
+func (app *application) characterSearch(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("query")
+
+	redirLink := "/character/add"
+	redirText := "Add Character +"
+	results := searchResults{
+		Redirect:     redirLink,
+		RedirectText: redirText,
+	}
+
+	if q != "" {
+		q = strings.Replace(q, " ", "", -1)
+		dbResults, err := app.characters.Search(q)
+		if err != nil {
+			if !errors.Is(err, models.ErrNoRecord) {
+				app.serverError(w, err)
+			}
+			return
+		}
+
+		if dbResults != nil {
+			res := []result{}
+			for _, row := range dbResults {
+				r := result{}
+				r.Text = *row.Name
+				r.ID = *row.ID
+				res = append(res, r)
+			}
+
+			results.Results = res
+		}
+	}
+
+	data := app.newTemplateData(r)
+	data.DropdownResults = results
+
+	app.render(w, http.StatusOK, "dropdown.tmpl.html", "", data)
+}
 func ping(w http.ResponseWriter, _ *http.Request) {
 	w.Write([]byte("pong"))
 }

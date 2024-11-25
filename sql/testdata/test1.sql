@@ -30,8 +30,9 @@ COPY public.person (id, slug, first, last, birthdate, profile_img, description) 
 --
 -- Data for Name: character; Type: TABLE DATA; Schema: public; Owner: colet
 --
-
-COPY public."character" (id, name, description, person_id, img_name) FROM stdin;
+COPY public."character" (id, name, description, img_name, person_id, slug) FROM stdin;
+1	David S. Pumpkins	\N	\N	\N	david-s-pumpkins-1
+2	Dave	\N	\N	\N	dave-2
 \.
 
 
