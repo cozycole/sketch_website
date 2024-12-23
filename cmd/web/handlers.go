@@ -27,7 +27,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "home.tmpl.html", "base", data)
 }
 
-func (app *application) search(w http.ResponseWriter, r *http.Request) {
+func (app *application) searchPage(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	app.render(w, http.StatusOK, "search.tmpl.html", "base", data)
 }
@@ -278,7 +278,7 @@ func (app *application) videoAddPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/video/%d/%s", video.ID, video.Slug), http.StatusSeeOther)
 }
 
-type searchResults struct {
+type dropdownSearchResults struct {
 	Results      []result
 	Redirect     string // e.g. /person/add
 	RedirectText string // e.g. "Add Person +"
@@ -295,7 +295,7 @@ func (app *application) personSearch(w http.ResponseWriter, r *http.Request) {
 
 	redirLink := "/person/add"
 	redirText := "Add Person +"
-	results := searchResults{
+	results := dropdownSearchResults{
 		Redirect:     redirLink,
 		RedirectText: redirText,
 	}
@@ -334,7 +334,7 @@ func (app *application) characterSearch(w http.ResponseWriter, r *http.Request) 
 
 	redirLink := "/character/add"
 	redirText := "Add Character +"
-	results := searchResults{
+	results := dropdownSearchResults{
 		Redirect:     redirLink,
 		RedirectText: redirText,
 	}
@@ -366,6 +366,24 @@ func (app *application) characterSearch(w http.ResponseWriter, r *http.Request) 
 	data.DropdownResults = results
 
 	app.render(w, http.StatusOK, "dropdown.tmpl.html", "", data)
+}
+
+func (app *application) searchPost(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	q := r.Form.Get("query")
+	results, err := app.search.Search(q)
+	if err != nil {
+		if !errors.Is(err, models.ErrNoRecord) {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.SearchResults = results
+
+	app.render(w, http.StatusOK, "search-result.tmpl.html", "", data)
 }
 
 func ping(w http.ResponseWriter, _ *http.Request) {

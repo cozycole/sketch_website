@@ -8,27 +8,30 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Logic for comprehensive search of entire all resources
+// Logic for comprehensive search of all resources
+
+type SearchResult struct {
+	Type         *string
+	ID           *int
+	Name         *string
+	Slug         *string
+	Img          *string
+	CreatorName  *string
+	CreatorSlug  *string
+	CreatorThumb *string
+	Rank         *float32
+}
 
 type SearchModel struct {
 	DB *pgxpool.Pool
 }
 
-type SearchResult struct {
-	Type *string
-	Id   *int
-	Name *string
-	Slug *string
-	Img  *string
-	Rank *float32
+type SearchModelInterface interface {
+	Search(query string) ([]*SearchResult, error)
 }
 
 func (m *SearchModel) Search(query string) ([]*SearchResult, error) {
 	stmt := `
-		SELECT 'video' AS type, id, title AS name, slug, thumbnail_name as img, ts_rank(search_vector, plainto_tsquery('english', $1)) AS rank
-		FROM video
-		WHERE search_vector @@ plainto_tsquery('english', $1)
-		UNION ALL
 		SELECT 'person' AS type, id, CONCAT(first, ' ', last) as name, slug, profile_img as img, ts_rank(search_vector, plainto_tsquery('english', $1)) AS rank
 		FROM person
 		WHERE search_vector @@ plainto_tsquery('english', $1)
@@ -40,7 +43,11 @@ func (m *SearchModel) Search(query string) ([]*SearchResult, error) {
 		SELECT 'creator' AS type, id, name, slug, profile_img as img, ts_rank(search_vector, plainto_tsquery('english', $1)) AS rank
 		FROM creator
 		WHERE search_vector @@ plainto_tsquery('english', $1)
-		ORDER BY rank, name DESC
+		UNION ALL
+		SELECT 'video' AS type, id, title AS name, slug, thumbnail_name as img, ts_rank(search_vector, plainto_tsquery('english', $1)) AS rank
+		FROM video
+		WHERE search_vector @@ plainto_tsquery('english', $1)
+		ORDER BY rank DESC, name ASC
 	`
 
 	rows, err := m.DB.Query(context.Background(), stmt, query)
@@ -58,7 +65,7 @@ func (m *SearchModel) Search(query string) ([]*SearchResult, error) {
 	for rows.Next() {
 		sr := &SearchResult{}
 		err := rows.Scan(
-			&sr.Type, &sr.Id, &sr.Name, &sr.Slug, &sr.Img, &sr.Rank,
+			&sr.Type, &sr.ID, &sr.Name, &sr.Slug, &sr.Img, &sr.Rank,
 		)
 		if err != nil {
 			return nil, err

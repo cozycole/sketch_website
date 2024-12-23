@@ -46,7 +46,7 @@ func TestSearch(t *testing.T) {
 			name:       "Find Pumpkin",
 			query:      "David Pumpkin",
 			wantResLen: 1,
-			wantType:   "creator",
+			wantType:   "character",
 			wantName:   "David S. Pumpkins",
 			wantSlug:   "david-s-pumpkins-1",
 		},
@@ -59,5 +59,11 @@ func TestSearch(t *testing.T) {
 		}
 
 		assert.Equal(t, len(results), tt.wantResLen)
+		if len(results) > 0 {
+			res := results[0]
+			assert.EqualPointer(t, res.Type, &tt.wantType)
+			assert.EqualPointer(t, res.Name, &tt.wantName)
+			assert.EqualPointer(t, res.Slug, &tt.wantSlug)
+		}
 	}
 }

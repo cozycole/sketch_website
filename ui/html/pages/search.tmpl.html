@@ -1,10 +1,18 @@
 {{define "title"}} Search Sketches {{end}}
 
 {{define "main"}}
-    <h1>Video Search</h1>
-    <div id="searchDiv">
-        <input id="searchInput" type="text" placeholder="Search videos">
-        <button id="searchButton">Search</button>
+    <div class="w-full flex items-center justify-center p-4 bg-gray-100">
+        <input 
+          type="search" 
+          id="searchInput"
+          placeholder="Find videos, actors and characters" 
+          class="w-full max-w-md py-2 px-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          hx-post="/search"
+          hx-params="query"
+          hx-trigger="keydown[key=='Enter']"
+          hx-swap="outerHTML"
+          hx-target="#searchResults"
+        />
     </div>
     <div id="searchResults"></div>
 {{end}}

@@ -25,6 +25,7 @@ type application struct {
 	creators      models.CreatorModelInterface
 	people        models.PersonModelInterface
 	characters    models.CharacterModelInterface
+	search        models.SearchModelInterface
 	debugMode     bool
 	formDecoder   *form.Decoder
 }
@@ -68,6 +69,7 @@ func main() {
 		creators:      &models.CreatorModel{DB: dbpool},
 		people:        &models.PersonModel{DB: dbpool},
 		characters:    &models.CharacterModel{DB: dbpool},
+		search:        &models.SearchModel{DB: dbpool},
 		debugMode:     *debug,
 	}
 

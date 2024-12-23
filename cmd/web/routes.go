@@ -17,7 +17,8 @@ func (app *application) routes() http.Handler {
 
 	router.HandleFunc("/ping", ping)
 
-	router.Get("/search", app.search)
+	router.Get("/search", app.searchPage)
+	router.Post("/search", app.searchPost)
 
 	router.Get("/video/{slug}", app.videoView)
 	router.Get("/video/add", app.videoAdd)

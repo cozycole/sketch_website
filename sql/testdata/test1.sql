@@ -24,6 +24,10 @@ COPY public.person (id, slug, first, last, birthdate, profile_img, description) 
 1	kyle-mooney-1	Kyle	Mooney	1984-09-03	kyle-mooney-1.jpg	\N
 2	tim-gilbert-4	Tim	Gilbert	1983-05-13	tim-gilbert-4.jpg	this is the description
 3	james-hartnett-5	James	Hartnett	\N	james-hartnett-5.jpg	\N
+4	test-alpha-4	Test	Alpha	\N	james-hartnett-5.jpg	\N
+5	test-beta-5	Test	Beta	1983-05-13	tim-gilbert-4.jpg	this is the description
+6	test-charlie-6	Test	Charlie	1984-09-03	kyle-mooney-1.jpg	\N
+7	test-delta-6	Test	Delta	1984-09-03	kyle-mooney-1.jpg	\N
 \.
 
 
@@ -33,6 +37,7 @@ COPY public.person (id, slug, first, last, birthdate, profile_img, description) 
 COPY public."character" (id, name, description, img_name, person_id, slug) FROM stdin;
 1	David S. Pumpkins	\N	\N	\N	david-s-pumpkins-1
 2	Dave	\N	\N	\N	dave-2
+3	Test Character	\N	\N	\N	test-char-1
 \.
 
 

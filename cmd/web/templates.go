@@ -22,7 +22,8 @@ type templateData struct {
 	Video           *models.Video
 	Creator         *models.Creator
 	Person          *models.Person
-	DropdownResults searchResults
+	DropdownResults dropdownSearchResults
+	SearchResults   []*models.SearchResult
 	Form            any
 	Flash           string
 	IsAuthenticated bool
@@ -60,14 +61,22 @@ func dict(values ...any) map[string]any {
 	return m
 }
 
+func derefString(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
 // Init global variable which maps string func names to
 // functions to be used within templates (since you can call
 // functions from template). NOTE: The tempalte functions should only
 // return a single value
 var functions = template.FuncMap{
-	"humanDate": humanDate,
-	"getYear":   getYear,
-	"dict":      dict,
+	"humanDate":   humanDate,
+	"getYear":     getYear,
+	"dict":        dict,
+	"derefString": derefString,
 }
 
 // Getting mapping of html page filename to template set for the page

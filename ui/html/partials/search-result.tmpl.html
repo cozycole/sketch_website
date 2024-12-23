@@ -1,0 +1,48 @@
+<div id="searchResults" >
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        {{range .SearchResults}}
+            {{if ne (derefString .Type) "video"}}
+            <div class="bg-white border border-gray-300 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-500">
+                <div class="mx-1 my-3 flex flex-col items-center">
+                    <div class="w-1/2">
+                        <a href="/{{.Type}}/{{.Slug}}">
+                            <img src="/static/img/{{.Type}}/{{.Img}}"
+                                class="rounded-full border border-gray-300"
+                            />
+                        </a>
+                    </div>
+                    <h3 class="mt-4 text-lg font-semibold text-gray-800">
+                        <a href="/{{.Type}}/{{.Slug}}">{{.Name}}</a>
+                    </h3>
+                    <h4>{{.Type}}</h4>
+                </div>
+            </div>
+            {{end}}
+        {{end}}
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        {{range .SearchResults}}
+            {{if eq (derefString .Type) "video"}}
+                <div class="bg-white border border-gray-300 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg hover:border-gray-500">
+                    <div class="flex flex-col">
+                        <a href="/{{.Type}}/{{.Slug}}">
+                            <img src="/static/img/{{.Type}}/{{.ID}}/{{.Img}}"
+                                class="w-full rounded-lg"
+                            />
+                        </a>
+                        <div class="w-[calc(95%-4px)]">
+                            <h3 class="font-bold line-clamp-2">
+                            <a href="/video/{{.Slug}}">{{.Name}}</a> 
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                 
+            {{end}}
+            
+        {{end}}
+    </div>
+    {{if eq (len .SearchResults) 0 }}
+        <p>No results...</p>
+    {{end}}
+</div>
